@@ -28,6 +28,7 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
@@ -41,6 +42,7 @@ import lombok.NoArgsConstructor;
 @Builder(builderMethodName = "visit")
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class Visit {
 
     @Id

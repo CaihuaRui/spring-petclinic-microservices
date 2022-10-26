@@ -15,15 +15,23 @@
  */
 package org.springframework.samples.petclinic.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.Date;
+import javax.validation.constraints.Size;
 import lombok.Data;
 
 /**
- * @author Maciej Szarlinski
+ * @author mszarlinski@bravurasolutions.com on 2016-12-05.
  */
 @Data
-public class PetType {
+public class PetRequest {
+    private int id;
 
-    private int Id;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date birthDate;
 
+    @Size(min = 1)
     private String name;
+
+    private int typeId;
 }

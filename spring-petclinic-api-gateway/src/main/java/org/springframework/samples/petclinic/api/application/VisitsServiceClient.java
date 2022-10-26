@@ -15,41 +15,46 @@
  */
 package org.springframework.samples.petclinic.api.application;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.samples.petclinic.api.dto.Visits;
-import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-
 import java.util.List;
-
-import static java.util.stream.Collectors.joining;
+import net.devh.boot.grpc.client.inject.GrpcClient;
+import org.springframework.samples.petclinic.api.dto.VisitDetails;
+import org.springframework.samples.petclinic.api.dto.Visits;
+import org.springframework.samples.petclinic.visits.grpc.VisitsRequest;
+import org.springframework.samples.petclinic.visits.grpc.VisitsResponse;
+import org.springframework.samples.petclinic.visits.grpc.VisitsServiceGrpc.VisitsServiceBlockingStub;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Maciej Szarlinski
  */
 @Component
-@RequiredArgsConstructor
 public class VisitsServiceClient {
-
-    // Could be changed for testing purpose
-    private String hostname = "http://visits-service/";
-
-    private final WebClient.Builder webClientBuilder;
+    @GrpcClient("visits-grpc-server")
+    private VisitsServiceBlockingStub stub;
 
     public Mono<Visits> getVisitsForPets(final List<Integer> petIds) {
-        return webClientBuilder.build()
-            .get()
-            .uri(hostname + "pets/visits?petId={petId}", joinIds(petIds))
-            .retrieve()
-            .bodyToMono(Visits.class);
+        return Mono.just(getVisitsByPetIds(petIds));
     }
 
-    private String joinIds(List<Integer> petIds) {
-        return petIds.stream().map(Object::toString).collect(joining(","));
+    public Visits getVisitsByPetIds(final List<Integer> petIds) {
+        VisitsResponse response = stub.visits(VisitsRequest.newBuilder()
+            .addAllPetId(petIds)
+            .build());
+
+        Visits visits = new Visits();
+        response.getEleList().forEach(o -> visits.getItems().add(new VisitDetails(o.getId(),
+            o.getPetId(), o.getDate(), o.getDescription())));
+        return visits;
     }
 
-    void setHostname(String hostname) {
-        this.hostname = hostname;
+    public VisitDetails createVisits(VisitDetails visit) {
+        org.springframework.samples.petclinic.visits.grpc.Visits response =
+            stub.create(org.springframework.samples.petclinic.visits.grpc.Visits.newBuilder()
+                .setPetId(visit.getPetId())
+                .setDate(visit.getDate())
+                .setDescription(visit.getDescription())
+                .build());
+        return visit;
     }
 }

@@ -1,0 +1,72 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package org.springframework.samples.petclinic.customers.grpc;
+import "google/protobuf/empty.proto";
+
+message OwnerRequest {
+  int32 ownerId = 1;
+}
+
+message PetRequest {
+  int32 petId = 1;
+}
+
+message OwnerResponse {
+  int32 id = 1;
+
+  string firstName = 2;
+
+  string lastName = 3;
+
+  string address = 4;
+
+  string city = 5;
+
+  string telephone = 6;
+
+  repeated PetResponse pets = 7;
+}
+
+message PetResponse {
+  int32 id = 1;
+
+  string name = 2;
+
+  string birthDate = 3;
+
+  PetType type = 4;
+
+  OwnerResponse owner = 5;
+}
+
+message PetType {
+  int32 id = 1;
+
+  string name = 2;
+}
+
+message PetTypes {
+  repeated PetType ele = 1;
+}
+
+message Owners {
+  repeated OwnerResponse ele = 1;
+}
+
+service CustomersService {
+  rpc createOwner(OwnerResponse) returns (OwnerResponse);
+
+  rpc findOwner(OwnerRequest) returns (OwnerResponse);
+
+  rpc findAll(google.protobuf.Empty) returns (Owners);
+
+  rpc updateOwner(OwnerResponse) returns (google.protobuf.Empty);
+
+  rpc getPetTypes(google.protobuf.Empty) returns (PetTypes);
+
+  rpc createPet(PetResponse) returns (PetResponse);
+
+  rpc updatePet(PetResponse) returns (google.protobuf.Empty);
+
+  rpc findPet(PetRequest) returns (PetResponse);
+}

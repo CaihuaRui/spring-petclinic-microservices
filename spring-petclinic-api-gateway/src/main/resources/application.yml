@@ -11,15 +11,17 @@ spring:
             - Path=/api/vet/**
           filters:
             - StripPrefix=2
-        - id: visits-service
-          uri: http://visits-service
-          predicates:
-            - Path=/api/visit/**
-          filters:
-            - StripPrefix=2
-        - id: customers-service
-          uri: http://customers-service
-          predicates:
-            - Path=/api/customer/**
-          filters:
-            - StripPrefix=2
+
+
+grpc:
+  client:
+    visits-grpc-server:
+      address: 'discovery:///visits-service'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+    customers-grpc-server:
+      address: 'discovery:///customers-service'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext

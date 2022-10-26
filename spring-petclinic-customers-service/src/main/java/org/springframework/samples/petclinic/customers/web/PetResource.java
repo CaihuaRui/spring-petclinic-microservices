@@ -31,7 +31,7 @@ import java.util.Optional;
  * @author Arjen Poutsma
  * @author Maciej Szarlinski
  */
-@RestController
+//@RestController
 @Timed("petclinic.pet")
 @RequiredArgsConstructor
 @Slf4j

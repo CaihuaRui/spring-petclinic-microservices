@@ -35,7 +35,7 @@ import java.util.Optional;
  * @author Maciej Szarlinski
  */
 @RequestMapping("/owners")
-@RestController
+//@RestController
 @Timed("petclinic.owner")
 @RequiredArgsConstructor
 @Slf4j

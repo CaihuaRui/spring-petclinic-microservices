@@ -15,21 +15,32 @@
  */
 package org.springframework.samples.petclinic.api.boundary.web;
 
+import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.api.application.CustomersServiceClient;
 import org.springframework.samples.petclinic.api.application.VisitsServiceClient;
 import org.springframework.samples.petclinic.api.dto.OwnerDetails;
+import org.springframework.samples.petclinic.api.dto.PetDetails;
+import org.springframework.samples.petclinic.api.dto.PetRequest;
+import org.springframework.samples.petclinic.api.dto.PetType;
+import org.springframework.samples.petclinic.api.dto.VisitDetails;
 import org.springframework.samples.petclinic.api.dto.Visits;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
-
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @author Maciej Szarlinski
@@ -45,6 +56,17 @@ public class ApiGatewayController {
 
     private final ReactiveCircuitBreakerFactory cbFactory;
 
+    @GetMapping(value = "owners/*/pets/{petId}/visits")
+    public List<VisitDetails> visits(final @PathVariable int petId) {
+        return visitsServiceClient.getVisitsByPetIds(Lists.newArrayList(petId)).getItems();
+    }
+
+    @PostMapping(value = "owners/*/pets/{petId}/visits")
+    public VisitDetails createVisits(@Valid @RequestBody VisitDetails visit,final @PathVariable int petId) {
+        visit.setPetId(petId);
+        return visitsServiceClient.createVisits(visit);
+    }
+
     @GetMapping(value = "owners/{ownerId}")
     public Mono<OwnerDetails> getOwnerDetails(final @PathVariable int ownerId) {
         return customersServiceClient.getOwner(ownerId)
@@ -56,7 +78,48 @@ public class ApiGatewayController {
                     })
                     .map(addVisitsToOwner(owner))
             );
+    }
 
+    @GetMapping(value = "owners")
+    public List<OwnerDetails> getAllOwners() {
+        return customersServiceClient.getAllOwners();
+    }
+
+    @PostMapping(value = "owners")
+    @ResponseStatus(HttpStatus.CREATED)
+    public OwnerDetails createOwner(@Valid @RequestBody OwnerDetails owner) {
+        return customersServiceClient.createOwner(owner);
+    }
+
+    @PutMapping(value = "owners/{ownerId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateOwner(@PathVariable("ownerId") int ownerId, @Valid @RequestBody OwnerDetails ownerRequest) {
+        ownerRequest.setId(ownerId);
+        customersServiceClient.updateOwner(ownerRequest);
+    }
+
+    @GetMapping("/petTypes")
+    public List<PetType> getPetTypes() {
+        return customersServiceClient.getPetTypes();
+    }
+
+    @PostMapping("/owners/{ownerId}/pets")
+    @ResponseStatus(HttpStatus.CREATED)
+    public PetDetails createPet(
+        @RequestBody PetRequest petRequest,
+        @PathVariable("ownerId") int ownerId) {
+        return customersServiceClient.createPet(petRequest, ownerId);
+    }
+
+    @PutMapping("/owners/*/pets/{petId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updatePet(@RequestBody PetRequest petRequest) {
+        customersServiceClient.updatePet(petRequest);
+    }
+
+    @GetMapping("owners/*/pets/{petId}")
+    public PetDetails findPet(@PathVariable("petId") int petId) {
+        return customersServiceClient.findPet(petId);
     }
 
     private Function<Visits, OwnerDetails> addVisitsToOwner(OwnerDetails owner) {

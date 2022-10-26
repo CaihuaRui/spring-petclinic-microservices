@@ -1,0 +1,25 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package org.springframework.samples.petclinic.visits.grpc;
+message VisitsRequest {
+  repeated int32 petId = 1;
+}
+message Visits {
+  int32 id = 1;
+
+  string date = 2;
+
+  string description = 3;
+
+  int32 petId = 4;
+}
+
+message VisitsResponse {
+  repeated Visits ele = 8;
+}
+
+service VisitsService {
+  rpc visits(VisitsRequest) returns (VisitsResponse);
+
+  rpc create(Visits) returns (Visits);
+}

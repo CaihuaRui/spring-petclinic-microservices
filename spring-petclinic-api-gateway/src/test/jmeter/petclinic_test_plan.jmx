@@ -391,7 +391,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/api/visit/owners/${OWNER_ID}/pets/${PET_ID}/visits</stringProp>
+          <stringProp name="HTTPSampler.path">/api/gateway/owners/${OWNER_ID}/pets/${PET_ID}/visits</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -435,7 +435,7 @@
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/visit/owners/${OWNER_ID}/pets/${PET_ID}/visits</stringProp>
+            <stringProp name="HTTPSampler.path">/api/gateway/owners/${OWNER_ID}/pets/${PET_ID}/visits</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
